@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def pars(url, headers):
+def pars_html(url, headers):
     titles = []
     full = []
 
@@ -19,9 +19,7 @@ def pars(url, headers):
     for i in comments_clean:
         full.append([' '.join(i)])  # делаем из всего список списков для удобства экспорта
 
-    titles.append(url.replace('https://vk.com/', ''))
-
-    return full, titles
+    return full
 
 
 def lower_pos_tag(words):

@@ -1,7 +1,7 @@
 import openpyxl
 
 from export import export
-from pars import pars
+from pars import pars_html
 
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 "
@@ -17,6 +17,6 @@ urls = ['https://vk.com/wall-29534144_15621640', 'https://vk.com/wall-29534144_1
 index = 0
 wb = openpyxl.Workbook()
 for url in urls:
-    comment_list, titles = pars(url, headers)
-    export(wb, comment_list, titles, index)
+    comment_list = pars_html(url, headers)
+    export(wb, comment_list, url, index)
     index += 1
