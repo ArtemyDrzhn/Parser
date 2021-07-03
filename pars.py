@@ -1,3 +1,5 @@
+from nltk.stem.snowball import SnowballStemmer
+from nltk import pos_tag
 import requests
 from bs4 import BeautifulSoup
 
@@ -20,3 +22,28 @@ def pars(url, headers):
     titles.append(url.replace('https://vk.com/', ''))
 
     return full, titles
+
+
+def lower_pos_tag(words):
+    """
+    :param words: список слов
+    :return: все лексемы, преобразованные к нижнему регистру
+    """
+    lower_words = []
+    for i in words:
+        lower_words.append(i.lower())
+    pos_words = pos_tag(lower_words, lang='rus')
+    return pos_words
+
+
+def clean(words):
+    """
+    :param words: список слов
+    :return: существительные, прилагательные, глаголы и наречия
+    """
+    stemmer = SnowballStemmer("russian")
+    cleaned_words = []
+    for i in words:
+        if i[1] in ['S', 'A', 'V', 'ADV']:
+            cleaned_words.append(stemmer.stem(i[0]))
+    return cleaned_words
