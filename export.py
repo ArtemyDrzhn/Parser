@@ -1,14 +1,11 @@
 import openpyxl
 
 
-def export(comment, titles):
-    wb = openpyxl.Workbook()
-    index = 0  # индекс для книги ёксиля
-    for title in titles:
-        wb.create_sheet(title=title, index=index)
+def export(wb, comment, title, index):
 
-        sheet = wb[title]
-        for i in comment:
-            sheet.append(i)
-        index += 1
+    wb.create_sheet(title=str(index), index=index)
+
+    sheet = wb[str(index)]
+    for i in comment:
+        sheet.append(i)
     wb.save('ex.xlsx')
