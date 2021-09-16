@@ -1,8 +1,4 @@
-import requests
-from bs4 import BeautifulSoup
-
-from export import export
-from parsing import parse_html
+from tokenizer import process
 
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -17,6 +13,10 @@ urls = ['https://vk.com/wall-29534144_15621640', 'https://vk.com/wall-29534144_1
         ]
 
 
-for url in urls:
-    commet_list = parse_html(url, headers)
-    export(commet_list, url)
+if __name__ == '__main__':
+    data = {}
+    labels = ['neutral', 'bad', 'good']
+    result = map(process, labels)
+    for i in result:
+        data.update(i)
+    print(data)

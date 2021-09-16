@@ -15,3 +15,4 @@ def parse_html(url, headers):
     for i in comments_clean:
         full.append([' '.join(i)])
     return full
+
