@@ -1,22 +1,53 @@
+from nltk.probability import FreqDist
+from collections import OrderedDict
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.model_selection import GridSearchCV
+from sklearn.utils import shuffle
+import numpy as np
+from scipy.sparse import csr_matrix
+
 from tokenizer import process
-
-headers = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                  "Chrome/81.0.4044.122 Safari/537.36",
-}
-
-urls = ['https://vk.com/wall-29534144_15621640', 'https://vk.com/wall-29534144_15621274',
-        'https://vk.com/wall-29534144_15620797', 'https://vk.com/wall-29534144_15620545',
-        'https://vk.com/wall-29534144_15619450', 'https://vk.com/wall-29534144_15618993',
-        'https://vk.com/wall-29534144_15618210', 'https://vk.com/wall-29534144_15617506',
-        'https://vk.com/wall-29534144_15616183', 'https://vk.com/wall-29534144_15615722'
-        ]
-
 
 if __name__ == '__main__':
     data = {}
-    labels = ['neutral', 'bad', 'good']
+    labels = ['bad', 'normal']
     result = map(process, labels)
     for i in result:
         data.update(i)
-    print(data)
+
+    # Создание помеченный данных со структурой:
+    # [([список слов отзыва], метка_класса)]
+    labels = ['bad', 'normal']
+    labeled_data = []
+    for label in labels:
+        for document in data[label]['Word_matrix']:
+            labeled_data.append((document, label))
+
+    # Создание вокабуляра с уникальными лексемами
+    all_words = []
+    for label in labels:
+        frequency = FreqDist(data[label]['All_words'])
+        common_words = frequency.most_common(10000)
+        words = [i[0] for i in common_words]
+        all_words.extend(words)
+    # Извлечение уникальных лексем
+    unique_words = list(OrderedDict.fromkeys(all_words))
+
+    # Частотное кодирование для классификаторов scikit-learn
+    # Разреженная матрица для признаков
+    matrix_vec = csr_matrix((len(labeled_data), len(unique_words)), dtype=np.int8).toarray()
+    # Массив для меток классов
+    target = np.zeros(len(labeled_data), 'str')
+    for index_doc, document in enumerate(labeled_data):
+        for index_word, word in enumerate(unique_words):
+            # Подсчет кол-ва вхождения слова в отзыв
+            matrix_vec[index_doc, index_word] = document[0].count(word)
+        target[index_doc] = document[1]
+    # Перемешиваем датасет
+    X, Y = shuffle(matrix_vec, target)
+
+    parameter = [1, 0, 0.1, 0.01, 0.001, 0.0001]
+    param_grid = {'alpha': parameter}
+    grid_search = GridSearchCV(MultinomialNB(), param_grid, cv=5)
+    grid_search.fit(X, Y)
+    Alpha, best_score = grid_search.best_params_, grid_search.best_score_

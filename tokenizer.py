@@ -3,13 +3,13 @@ from nltk.stem.snowball import SnowballStemmer
 from nltk import RegexpTokenizer
 from nltk import bigrams
 from nltk import FreqDist
+from nltk import pos_tag
 
 
 def lower_pos_tag(words):
     lower_words = []
     for i in words:
         lower_words.append(i.lower())
-    from nltk import pos_tag
     pos_words = pos_tag(lower_words, lang='rus')
     return pos_words
 
@@ -23,7 +23,7 @@ def clean(words):
     return cleaned_words
 
 
-corpus_root = 'corpus_root'  # Путь к корпусу
+corpus_root = 'corpus'  # Путь к корпусу
 
 
 def process(label):
@@ -36,11 +36,12 @@ def process(label):
     corpus = PlaintextCorpusReader(corpus_root + '\\' + label, '.*', encoding='utf-8')
     # Получение списка имен файлов в корпусе
     names = corpus.fileids()
-    # Создание токенайзера
 
+    # Создание токенайзера
     tokenizer = RegexpTokenizer(r'\w+|[^\w\s]+')
-    for i in range(len(names)):  # Обработка корпуса
-        bag_words = tokenizer.tokenize(corpus.raw(names[i]))
+    for name in names:  # Обработка корпуса
+        print(name)
+        bag_words = tokenizer.tokenize(corpus.raw(name))
         lower_words = lower_pos_tag(bag_words)
         cleaned_words = clean(lower_words)
         final_words = list(bigrams(cleaned_words)) + cleaned_words
@@ -54,4 +55,5 @@ def process(label):
     for word in templist_allwords:
         if word not in hapaxes:
             data['All_words'].append(word)
+            print(len(data['All_words']))
     return {label: data}
