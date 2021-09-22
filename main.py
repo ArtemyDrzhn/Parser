@@ -1,3 +1,5 @@
+from itertools import starmap
+
 from nltk.probability import FreqDist
 from collections import OrderedDict
 from sklearn.naive_bayes import MultinomialNB
@@ -6,12 +8,14 @@ from sklearn.utils import shuffle
 import numpy as np
 from scipy.sparse import csr_matrix
 
+from export_import import export_test, corpus_write
 from tokenizer import process
 
-if __name__ == '__main__':
+
+def vectorize(corpus_root):
     data = {}
     labels = ['bad', 'normal']
-    result = map(process, labels)
+    result = starmap(process, [(labels[0], corpus_root), (labels[1], corpus_root)])
     for i in result:
         data.update(i)
 
@@ -45,6 +49,14 @@ if __name__ == '__main__':
         target[index_doc] = document[1]
     # Перемешиваем датасет
     X, Y = shuffle(matrix_vec, target)
+    return X, Y
+
+
+if __name__ == '__main__':
+    corpus_root = 'corpus'
+    X, Y = vectorize(corpus_root)
+    corpus_root = 'corpus_test'
+    X_test, Y_test = vectorize(corpus_root)
 
     parameter = [1, 0, 0.1, 0.01, 0.001, 0.0001]
     param_grid = {'alpha': parameter}

@@ -29,35 +29,12 @@ def export():
             lst.append(1)
         data_set.append(lst)
 
-    # with open('data//labeled.txt', 'r', encoding='utf-8') as file_labeled:
-    #     comments = file_labeled.readlines()
-    #     del comments[0]
-    #
-    #     # Чистка от лишнего
-    #     lst = []
-    #     for comment in comments:
-    #         comment = comment.replace('"', '')
-    #         comment = comment.replace('",', '')
-    #         comment = comment.replace('.0', '')
-    #         comment = comment.replace('\n', '')
-    #         lst.append(comment)
-    #
-    #     lst_variable = []
-    #     for comment in lst:
-    #         if lst.index(comment) % 2 == 0:
-    #             # print(comment)
-    #             lst_variable.append(comment)
-    #         else:
-    #             comment = comment.replace(',', '')
-    #             comment = int(comment)
-    #             lst_variable.append(comment)
-    #         data_set.append(lst_variable)
     return data_set
 
 
 # Нужно разбить на три класса - плохой, средний, положительный
 # 0-положительно 1 - отрицательно
-def corpus_write(data_set):
+def corpus_write(data_set, path0, path1):
     """
     Создание корпуса данных
     :param data_set: список списков (коммент, лейбл)
@@ -73,11 +50,32 @@ def corpus_write(data_set):
             lst_bad.append(i[0] + '\n')
 
     for n in range(1101):
-        normal = open('corpus/normal//' + str(n) + '.txt', 'w', encoding='utf-8')
+        normal = open(path0 + str(n) + '.txt', 'w', encoding='utf-8')
         normal.writelines(lst_normal[:185])
         del lst_normal[:185]
 
     for b in range(367):
-        bad = open('corpus/bad//' + str(b) + '.txt', 'w', encoding='utf-8')
+        bad = open(path1 + str(b) + '.txt', 'w', encoding='utf-8')
         bad.writelines(lst_bad[:55])
         del lst_bad[:55]
+
+
+def export_test():
+    with open('data//labeled.csv', 'r', encoding='utf-8') as file_dataset:
+        comments = file_dataset.readlines()
+
+    data_set = []
+    for c in comments:
+        c = c.replace('"', '')
+        c = c.replace('"', '')
+        c = c.replace('.0', '')
+        c = c.replace('\n', '')
+        if c == ',1' or c == ',0':
+            c = c[1]
+        data_set.append(c)
+
+    need = []
+    for data in range(0, len(data_set), 2):
+        lst = [data_set[data], int(data_set[data + 1])]
+        need.append(lst)
+    return need

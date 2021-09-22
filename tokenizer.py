@@ -26,7 +26,7 @@ def clean(words):
 corpus_root = 'corpus'  # Путь к корпусу
 
 
-def process(label):
+def process(label, corpus_root):
     # Wordmatrix - список документов с лексемами
     # All words - список всех слов
     data = {'Word_matrix': [], 'All_words': []}
