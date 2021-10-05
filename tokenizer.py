@@ -26,7 +26,7 @@ def clean(words):
 corpus_root = 'corpus'  # Путь к корпусу
 
 
-def process(label, corpus_root):
+def process(label):
     # Wordmatrix - список документов с лексемами
     # All words - список всех слов
     data = {'Word_matrix': [], 'All_words': []}
@@ -47,8 +47,8 @@ def process(label, corpus_root):
         final_words = list(bigrams(cleaned_words)) + cleaned_words
         data['Word_matrix'].append(final_words)
         templist_allwords.extend(cleaned_words)
-    # Определение гапаксов
 
+    # Определение гапаксов
     temp_list_freq = FreqDist(templist_allwords)
     hapaxes = temp_list_freq.hapaxes()
     # Фильтрация от гапаксов
@@ -57,3 +57,18 @@ def process(label, corpus_root):
             data['All_words'].append(word)
             print(len(data['All_words']))
     return {label: data}
+
+
+def get_features(words):
+    words = words.split(' ')
+    lower_words = []
+    for i in words:
+        lower_words.append(i.lower())
+    pos_words = pos_tag(lower_words, lang='rus')
+
+    stemmer = SnowballStemmer("russian")
+    cleaned_words = []
+    for i in pos_words:
+        if i[1] in ['S', 'A', 'V', 'ADV']:
+            cleaned_words.append(stemmer.stem(i[0]))
+    return cleaned_words
